@@ -1,0 +1,69 @@
+@startuml usecase
+left to right direction
+skinparam packageStyle rectangle
+skinparam usecaseBackgroundColor #FFFFCC
+skinparam usecaseBorderColor #333333
+skinparam ArrowColor #333333
+actor Customer
+actor "Store Manager" as Manager
+actor "Card Association\nSystem" as Bank
+actor "Email System" as Mail
+
+rectangle AIMS {
+  package "Browse" {
+    usecase "View DVD list" as UC1
+    usecase "View DVD detail" as UC3
+    usecase "Search DVDs\n(by title / category / price)" as UC2
+    usecase "Play DVD (demo)" as UC4
+    usecase "Add DVD to cart" as UC5
+  }
+  package "Cart" {
+    usecase "View cart" as UC6
+    usecase "Sort DVDs in cart\n(by title / cost)" as UC7
+    usecase "Filter DVDs in cart\n(by ID / title)" as UC8
+    usecase "Update quantity" as UC9
+    usecase "Remove DVD from cart" as UC10
+    usecase "Get a lucky free item" as UC11
+  }
+  package "Order" {
+    usecase "Place order" as UC12
+    usecase "Enter delivery info" as UC13
+    usecase "Calculate delivery fee" as UC14
+    usecase "Pay order\n(credit card)" as UC15
+  }
+  package "Management" {
+    usecase "Log in" as UC16
+    usecase "View pending orders" as UC17
+    usecase "Approve / Reject order" as UC18
+    usecase "Add DVD to store" as UC19
+    usecase "Remove DVD from store" as UC20
+  }
+}
+
+Customer --> UC1
+Customer --> UC3
+Customer --> UC2
+Customer --> UC4
+Customer --> UC5
+Customer --> UC6
+Customer --> UC7
+Customer --> UC8
+Customer --> UC9
+Customer --> UC10
+Customer --> UC11
+Customer --> UC12
+UC12 ..> UC13 : <<include>>
+UC12 ..> UC14 : <<include>>
+UC12 ..> UC15 : <<include>>
+
+UC17 <-- Manager
+UC18 <-- Manager
+UC19 <-- Manager
+UC20 <-- Manager
+UC16 <.. UC17 : <<include>>
+UC16 <.. UC18 : <<include>>
+UC16 <.. UC19 : <<include>>
+UC16 <.. UC20 : <<include>>
+UC15 --> Bank
+UC12 --> Mail
+@enduml

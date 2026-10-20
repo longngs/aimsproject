@@ -1,0 +1,33 @@
+@startmindmap
+<style>
+mindmapDiagram { node { BackgroundColor #FFF8DC } :depth(1) { BackgroundColor #FFD27F } :depth(2) { BackgroundColor #CFE8FF } }
+</style>
+* When should accessor\nmethods be used?
+** Holub (2003):\n"getters/setters are evil"
+*** They expose implementation details\n(type & existence of fields)
+*** Changing a field type breaks\nevery caller → poor maintainability
+*** Leads to "data bags" + procedural code\nthat manipulates objects from outside
+*** Ask the object that owns the data\nto do the work, not for its data
+*** Prefer behaviour methods:\naccount.deposit(x) instead of setBalance()
+** Core OO principle
+*** Encapsulation / information hiding
+*** Tell, don't ask
+*** Law of Demeter
+*** Model behaviour (use cases),\nnot data
+left side
+** When accessors ARE justified
+*** Use case really needs the value\n(e.g. display DVD info in cart → getters)
+*** Boundary layers: UI, persistence,\nserialization, DTO, JavaBeans frameworks
+*** Immutable value objects\n(getter only, no setter)
+*** Configuration / simple data holders
+** Good practices
+*** Fields always private
+*** Add getter/setter only when a use case\nrequires it (AIMS: getters yes, setters no)
+*** Setters should validate & keep invariants
+*** Return copies of mutable fields\n(defensive copy)
+*** Prefer meaningful methods:\nisMatch(), totalCost(), toString()
+** Other sources
+*** Effective Java (Bloch):\nminimize mutability & accessibility
+*** Martin Fowler: Tell Don't Ask,\nAnemic Domain Model
+*** Clean Code (Martin):\nobjects vs data structures
+@endmindmap

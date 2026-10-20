@@ -1,0 +1,69 @@
+@startuml class
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor #FFFFCC
+skinparam classBorderColor #333333
+hide circle
+
+package hust.soict.dsai.aims {
+  class Aims {
+    + {static} main(args : String[]) : void
+  }
+}
+package hust.soict.dsai.aims.disc {
+  class DigitalVideoDisc {
+    - {static} nbDigitalVideoDiscs : int
+    - id : int
+    - title : String
+    - category : String
+    - director : String
+    - length : int
+    - cost : float
+    + DigitalVideoDisc(title : String)
+    + DigitalVideoDisc(title : String, category : String, cost : float)
+    + DigitalVideoDisc(title : String, category : String, director : String, cost : float)
+    + DigitalVideoDisc(title : String, category : String, director : String, length : int, cost : float)
+    + getId() : int
+    + getTitle() : String
+    + getCategory() : String
+    + getDirector() : String
+    + getLength() : int
+    + getCost() : float
+    + {static} getNbDigitalVideoDiscs() : int
+    + setTitle(title : String) : void
+    + isMatch(title : String) : boolean
+    + toString() : String
+  }
+}
+package hust.soict.dsai.aims.cart {
+  class Cart {
+    + {static} MAX_NUMBERS_ORDERED : int = 20
+    - itemsOrdered : DigitalVideoDisc[]
+    - qtyOrdered : int
+    + addDigitalVideoDisc(disc : DigitalVideoDisc) : void
+    + addDigitalVideoDisc(dvdList : DigitalVideoDisc[]) : void
+    + addDigitalVideoDisc(dvd1 : DigitalVideoDisc, dvd2 : DigitalVideoDisc) : void
+    + removeDigitalVideoDisc(disc : DigitalVideoDisc) : void
+    + totalCost() : float
+    + getQtyOrdered() : int
+    + print() : void
+    + searchById(id : int) : void
+    + searchByTitle(title : String) : void
+  }
+}
+package hust.soict.dsai.aims.store {
+  class Store {
+    + {static} MAX_ITEMS_IN_STORE : int = 100
+    - itemsInStore : DigitalVideoDisc[]
+    - qtyInStore : int
+    + addDVD(dvd : DigitalVideoDisc) : void
+    + removeDVD(dvd : DigitalVideoDisc) : void
+    + getQtyInStore() : int
+    + print() : void
+  }
+}
+
+Cart "0..1" o--> "0..20" DigitalVideoDisc : itemsOrdered
+Store o--> "0..*" DigitalVideoDisc : itemsInStore
+Aims ..> Cart : <<use>>
+Aims ..> DigitalVideoDisc : <<use>>
+@enduml
