@@ -1,0 +1,114 @@
+OOP LAB 01 - 03 : ANSWERS
+=========================
+
+----------------------------------------------------------------
+LAB 01 - Environment Setup and Java Basics
+----------------------------------------------------------------
+
+6.1 ChoosingOption
+
+Q1. What happens if users choose "Cancel"?
+- showConfirmDialog() returns JOptionPane.CANCEL_OPTION (value 2). Closing the
+  window returns CLOSED_OPTION (-1).
+- In the given code the expression (option == JOptionPane.YES_OPTION ? "Yes" : "No")
+  only checks for YES, so "Cancel" (and closing the dialog) is treated the same as
+  "No": the program shows "You've chosen: No". To handle it correctly we must
+  test CANCEL_OPTION / CLOSED_OPTION separately.
+
+Q2. How to customize the options, e.g. only "Yes"/"No", or "I do"/"I don't"?
+- Only two buttons Yes/No: use the overload with an option type:
+      JOptionPane.showConfirmDialog(null, "message", "title", JOptionPane.YES_NO_OPTION);
+- Custom labels: use showOptionDialog with an array of options:
+      Object[] options = {"I do", "I don't"};
+      int n = JOptionPane.showOptionDialog(null, "Do you want to change to the first class ticket?",
+              "Custom options", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+              null, options, options[0]);
+  n = 0 -> "I do", n = 1 -> "I don't", n = -1 -> dialog closed.
+  (Implemented in hust.soict.dsai.lab01.ChoosingOption.)
+
+----------------------------------------------------------------
+LAB 02 - Problem Modeling and Encapsulation
+----------------------------------------------------------------
+
+Q. If you create a constructor method to build a DVD by title then create a
+   constructor method to build a DVD by category. Does JAVA allow you to do this?
+- No. Both constructors would be DigitalVideoDisc(String). Java distinguishes
+  overloaded methods/constructors only by their signature (number, type and order
+  of parameters), not by parameter names. Two constructors with the same
+  signature cause the compile error "constructor DigitalVideoDisc(String) is
+  already defined". To support both we must change the signature (e.g. add a
+  parameter, use a different type) or use a static factory method such as
+  DigitalVideoDisc.byCategory(String).
+
+Reading assignment - When should accessor methods be used?
+- See ReadingAssignment/mindmap.png. Summary: getters/setters break encapsulation
+  when they expose implementation details; objects should offer behaviour
+  ("tell, don't ask"). Accessors are only added when a use case really needs
+  them. For AIMS: every getter is needed (the cart displays all DVD
+  information) but no setter is needed (no use case changes a DVD after it is
+  created).
+
+----------------------------------------------------------------
+LAB 03 - Basic Object-Oriented Techniques
+----------------------------------------------------------------
+
+2.1 Array parameter vs. arbitrary number of arguments (varargs)
+- addDigitalVideoDisc(DigitalVideoDisc... dvds) can be called with 0..n
+  separate arguments or with an array: cart.addDigitalVideoDisc(d1, d2, d3).
+- addDigitalVideoDisc(DigitalVideoDisc[] dvdList) needs the caller to build an
+  array first: cart.addDigitalVideoDisc(new DigitalVideoDisc[]{d1, d2, d3}).
+- Note: both cannot exist together in the same class because varargs is
+  compiled to an array, so they have the same signature.
+- Preference: varargs is more convenient for the caller and also accepts an
+  array. However, the lab explicitly asks for the array signature and for the
+  (dvd1, dvd2) overload, so the array version is kept in the code and the
+  varargs version is shown in a comment in Cart.java. If only one could be kept
+  in a real project, I would prefer varargs.
+
+3. Passing parameter
+Q1. After the call of swap(jungleDVD, cinderellaDVD) why does the title of these
+    two objects still remain?
+- Java passes a COPY of the reference value. Inside swap(), o1 and o2 are new
+  local variables pointing to the same objects. Swapping o1 and o2 only swaps
+  these local copies; the variables jungleDVD and cinderellaDVD in main() are
+  untouched, so they still point to "Jungle" and "Cinderella".
+
+Q2. After the call of changeTitle(jungleDVD, cinderellaDVD.getTitle()) why is the
+    title of the JungleDVD changed?
+- The parameter dvd is a copy of the reference, but it points to the SAME object
+  as jungleDVD. dvd.setTitle(title) modifies that shared object, so the change
+  is visible from main(). The next line dvd = new DigitalVideoDisc(oldTitle)
+  only re-points the local copy to a new object, which has no effect on
+  jungleDVD. Result: jungle dvd title becomes "Cinderella".
+
+=> Java is always pass-by-value. For objects, the value that is passed is the
+   reference (address), therefore a method can change the object's state but
+   cannot change which object the caller's variable refers to.
+
+A swap that really works (TestPassingParameter.java):
+- swap(DVDWrapper a, DVDWrapper b): swaps the references stored inside two
+  holder objects.
+- swap(DigitalVideoDisc[] arr, int i, int j): swaps two elements of an array.
+  Both work because we modify the state of shared objects (the holders / the
+  array) instead of the local copies of the references.
+
+6. Suggestion: return type of toString()
+- String. toString() overrides Object.toString(), which returns a String; it is
+  called automatically when an object is concatenated with a String or printed
+  with System.out.println(object).
+
+9. String, StringBuilder and StringBuffer (measured results)
+- ConcatenationInLoops (65,536 iterations):
+      String +       : ~882 ms
+      StringBuffer   : ~9 ms
+      StringBuilder  : ~5 ms
+- GarbageCreator vs NoGarbage on a 120 KB file:
+      GarbageCreator (+ operator) : ~4,783 ms
+      NoGarbage (StringBuffer)    : ~10 ms
+- Explanation: String is immutable, so every s += c creates a new String and
+  copies all previous characters (O(n^2) time) and leaves the old object as
+  garbage for the GC. With large files the program becomes extremely slow and
+  can run out of memory. StringBuilder / StringBuffer are mutable buffers:
+  append() modifies the same object (amortised O(1)). StringBuffer is
+  synchronized (thread-safe) so it is slightly slower than StringBuilder, which
+  is the best choice in single-threaded code.
